@@ -31,7 +31,8 @@ ENV APP_PORT=3000 \
     DISABLE_SIGNUP=true \
     NEXT_PUBLIC_BOT_FILE_UPLOAD_MAX_SIZE=10 \
     S3_PORT=443 \
-    S3_SSL=true
+    S3_SSL=true \
+    S3_BUCKET=typebot
 
 COPY railway-entrypoint.sh /usr/local/bin/railway-entrypoint.sh
 COPY nginx.conf.template /etc/nginx/nginx.conf.template

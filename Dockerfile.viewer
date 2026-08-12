@@ -1,0 +1,9 @@
+FROM baptistearno/typebot-viewer:3.17.2
+
+# Railway drops a template variable's default unless the live value is a Railway
+# expression, so every literal the viewer needs is baked in here instead of being
+# published as a blank required field on the deploy form.
+ENV S3_PORT=443 \
+    S3_SSL=true \
+    S3_BUCKET=typebot \
+    HOSTNAME=0.0.0.0
