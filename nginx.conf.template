@@ -1,0 +1,62 @@
+user root;
+worker_processes auto;
+error_log /dev/stderr warn;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    access_log    off;
+    sendfile      on;
+    keepalive_timeout 65;
+    client_max_body_size 50m;
+
+    # Next.js sets large auth/session cookies; the stock 4k proxy buffer 502s on them.
+    proxy_buffer_size   16k;
+    proxy_buffers       8 16k;
+    proxy_busy_buffers_size 32k;
+
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+    }
+
+    server {
+        listen __GATEWAY_PORT__ default_server;
+        listen [::]:__GATEWAY_PORT__ default_server;
+        server_name _;
+
+        # The built-in mailbox. This is where the sign-in code and magic link
+        # land, so it is the credential surface of the whole deployment and is
+        # never served without authentication.
+        location /inbox {
+            auth_basic           "Typebot inbox";
+            auth_basic_user_file /etc/nginx/inbox.htpasswd;
+
+            proxy_pass http://127.0.0.1:__MAILPIT_HTTP_PORT__;
+            proxy_http_version 1.1;
+            proxy_set_header Host              $host;
+            proxy_set_header Upgrade           $http_upgrade;
+            proxy_set_header Connection        $connection_upgrade;
+            proxy_set_header X-Forwarded-For   $http_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;
+            proxy_read_timeout 300s;
+        }
+
+        location / {
+            proxy_pass http://127.0.0.1:__APP_PORT__;
+            proxy_http_version 1.1;
+            proxy_set_header Host              $host;
+            proxy_set_header Upgrade           $http_upgrade;
+            proxy_set_header Connection        $connection_upgrade;
+            proxy_set_header X-Real-IP         $remote_addr;
+            proxy_set_header X-Forwarded-For   $http_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;
+            proxy_read_timeout 300s;
+        }
+    }
+}
