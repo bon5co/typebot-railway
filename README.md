@@ -1,5 +1,9 @@
 # typebot-railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/typebot-or-just-updated-chatbot-builder-?referralCode=Z1xivh&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
+**Deploy on Railway:** [Typebot template](https://railway.com/deploy/typebot-or-just-updated-chatbot-builder-?referralCode=Z1xivh&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
 Wrapper image for deploying [Typebot](https://github.com/baptisteArno/typebot.io) on
 Railway, used by the `Typebot` marketplace template.
 
